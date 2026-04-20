@@ -1,0 +1,622 @@
+# All Measures
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# ==============================
+# LIBRARIES
+# ==============================
+library(dplyr)
+library(tidyr)
+library(DT)
+library(htmltools)
+library(shiny)
+library(fontawesome)
+library(stringr)
+library(readxl)
+library(writexl)
+library(commonmark)
+
+# ==============================
+# LOAD DATA
+# ==============================
+mr21    <- read_xlsx("Codebook/MR21_codebook.xlsx")
+maxed   <- read_xlsx("Codebook/maxed_codebook.xlsx")
+powered <- read_xlsx("Codebook/powered_codebook.xlsx")
+
+# ==============================
+# CLEANING FUNCTIONS
+# ==============================
+format_measure <- function(x) {
+  x %>%
+    str_replace_all("_", " ") %>%
+    str_squish() %>%
+    str_to_upper()
+}
+
+# ==============================
+# RECODE MAP
+# Keys must be in POST-format form (uppercase, no underscores, squished),
+# because format_measure() runs BEFORE recode() in clean_codebook().
+# ==============================
+recode_auto <- c(
+  "BIS BAS"                          = "BIS/BAS",
+  "FADE"                             = "FADE/FAMB",
+  "FOMP"                             = "FADE/FAMB",
+  "MMQ"                              = "MINI MENSTRUAL QUESTIONNAIRE",
+  "BFNES"                            = "BRIEF FEAR OF NEGATIVE EVALUATION SCALE",
+  "DIAMOND SUMMARY"                  = "DIAMOND",
+  "DCF"                              = "DATA COLLECTION FORM",
+  "EDE"                              = "EATING DISORDER EXAMINATION",
+  "CSSRS"                            = "COLUMBIA SUICIDE SEVERITY RATING SCALE",
+  "DFM"                              = "DRIVE FOR MUSCULARITY",
+  "CET" = "COMPULSIVE EXERCISE TEST", 
+  "EDS"                              = "EXERCISE DEPENDENCE SCALE",
+  "IUS-SF"                           = "INTOLERANCE OF UNCERTAINTY-SHORT FORM",
+  "IUS-S"                            = "INTOLERANCE OF UNCERTAINTY-SHORT FORM",
+  "AED"                              = "ANALOGOUS EXERCISE DECISIONS",
+  "EFQ"                              = "EATING FEARS QUESTIONNAIRE",
+  "EQF"                              = "EATING FEARS QUESTIONNAIRE",
+  "EATING FEARS QUESTIONNAIRE (EFQ)" = "EATING FEARS QUESTIONNAIRE", 
+  "ART" = "ATHLETES' RELATIONSHIP WITH TRAINING SCALE", 
+  "MINI MENTAL STATE EXAM MMSE"   = "MINI MENTAL STATE EXAM", 
+  "MCI" = "MENSTRUAL CYCLE INFORMATION", 
+  "EPSI" = "EATING PATHOLOGY SYMPTOMS INVENTORY", 
+  "PDS" = "PUBERTAL DEVELOPMENTAL SCALE", 
+  "SATAQ" =  "SOCIOCULTURAL ATTITUDES TOWARDS APPEARANCE QUESTIONNAIRE", 
+  "NVS MID" = "NVS (PRE/MID/POST)", 
+  "NVS PRE" = "NVS (PRE/MID/POST)",
+  "NVS POST" = "NVS (PRE/MID/POST)", 
+  "PVS PRE" = "PVS (PRE/POST)",
+  "PVS POST" = "PVS (PRE/POST)", 
+  "INTERVIEW 847A79" = "POWERED WEIGHT HISTORY INTERVIEW", 
+  "INTERVIEW"= "POWERED WEIGHT HISTORY INTERVIEW", 
+  "GFFS" = "GOLDFARB FEAR OF FAT SCALE", 
+  "GAD-7" = "GENERALIZED ANXIETY DISORDER 7-ITEM SCALE",
+  "PHQ" = "PATIENT HEALTH QUESTIONNAIRE 9-ITEM", 
+  "FMPS" = "FROST MULTIDIMENSIONAL PERFECTIONISM SCALE",
+  "DERS" = "DIFFICULTIES IN EMOTION REGULATION SCALE",  
+  "POTS" = "PERCEPTIONS OF TEASING SCALE", 
+  "FUNCTION OF EXERCISE" = "FADE/FAMB"
+)
+
+# ==============================
+# MEASURE DESCRIPTIONS
+# Each measure has its own .md file in Codebook/descriptions/.
+# Filename = lowercased measure name with non-alphanumerics replaced by "_".
+# To add/edit a description, just create/edit that file — no R changes needed.
+# ==============================
+descriptions_dir <- "Codebook/descriptions"
+
+measure_to_filename <- function(measure_name) {
+  key <- format_measure(measure_name)
+  key <- tolower(key)
+  key <- str_replace_all(key, "[^a-z0-9]+", "_")
+  key <- str_replace_all(key, "^_+|_+$", "")
+  file.path(descriptions_dir, paste0(key, ".md"))
+}
+
+get_description <- function(measure_name) {
+  path <- measure_to_filename(measure_name)
+  if (!file.exists(path)) {
+    return(sprintf(
+      "<em style='color:#888;'>No description yet. Create <code>%s</code> to add one.</em>",
+      htmltools::htmlEscape(path)
+    ))
+  }
+  md <- paste(readLines(path, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+  commonmark::markdown_html(md)
+}
+
+# ==============================
+# APPLY CLEANING
+# ==============================
+clean_codebook <- function(df, project_name) {
+  df %>%
+    mutate(
+      Measure = as.character(Measure),
+      Measure = format_measure(Measure),
+      Measure = recode(Measure, !!!recode_auto),
+      Project = project_name
+    )
+}
+
+mr21_clean    <- clean_codebook(mr21,    "MR21")
+maxed_clean   <- clean_codebook(maxed,   "MAXED")
+powered_clean <- clean_codebook(powered, "POWERED")
+
+# ==============================
+# COMBINE DATA
+# ==============================
+comparison1 <- bind_rows(maxed_clean, mr21_clean, powered_clean)
+
+# ==============================
+# VARIABLE-LEVEL SHARING INFO
+# ==============================
+var_projects <- comparison1 %>%
+  distinct(Variable, Project) %>%
+  group_by(Variable) %>%
+  summarise(
+    VarProjects     = paste(sort(unique(Project)), collapse = " "),
+    VarProjectCount = n_distinct(Project),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    VarShared = case_when(
+      VarProjectCount == 3 ~ "shared-all",
+      VarProjectCount == 2 ~ "shared-two",
+      TRUE                 ~ "unique"
+    )
+  )
+
+# ==============================
+# MEASURE-LEVEL SHARING INFO
+# ==============================
+measure_projects <- comparison1 %>%
+  distinct(Measure, Project) %>%
+  group_by(Measure) %>%
+  summarise(
+    MeasureProjects = paste(sort(unique(Project)), collapse = " "),
+    MeasureCount    = n_distinct(Project),
+    .groups = "drop"
+  )
+
+# ==============================
+# JOIN BACK
+# ==============================
+comparison1 <- comparison1 %>%
+  left_join(var_projects,     by = "Variable") %>%
+  left_join(measure_projects, by = "Measure")
+
+# ==============================
+# BADGE HELPER
+# ==============================
+make_project_badges <- function(projects_string) {
+  projects <- unlist(strsplit(as.character(projects_string[1]), " "))
+  badges <- c(
+    if ("MAXED"   %in% projects) "<span class='badge maxed'>MAXED</span>"     else "",
+    if ("MR21"    %in% projects) "<span class='badge mr21'>MR21</span>"       else "",
+    if ("POWERED" %in% projects) "<span class='badge powered'>POWERED</span>" else ""
+  )
+  paste(badges[nchar(badges) > 0], collapse = "")
+}
+
+measure_badge_df <- measure_projects %>%
+  mutate(MeasureBadges = vapply(MeasureProjects, make_project_badges, character(1)))
+
+# ==============================
+# OPTIONAL: print measures missing description files
+# ==============================
+measure_list <- sort(unique(comparison1$Measure))
+missing_descriptions <- measure_list[
+  !file.exists(vapply(measure_list, measure_to_filename, character(1)))
+]
+if (length(missing_descriptions) > 0) {
+  message("Measures still missing description files:\n  - ",
+          paste(missing_descriptions, collapse = "\n  - "))
+}
+
+# ==============================
+# CSS
+# ==============================
+css <- HTML("
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+  /* Description block */
+  .measure-description {
+    background: #f8f9fa;
+    border-left: 3px solid #339AF0;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #343a40;
+    border-radius: 4px;
+  }
+  .measure-description p              { margin: 0 0 8px 0; }
+  .measure-description p:last-child   { margin-bottom: 0; }
+  .measure-description h1,
+  .measure-description h2,
+  .measure-description h3,
+  .measure-description h4 {
+    margin: 10px 0 6px 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #212529;
+  }
+  .measure-description ul,
+  .measure-description ol             { margin: 4px 0 8px 20px; padding: 0; }
+  .measure-description li             { margin-bottom: 2px; }
+  .measure-description code {
+    background: #e9ecef;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+  }
+  .measure-description blockquote {
+    border-left: 3px solid #adb5bd;
+    margin: 6px 0;
+    padding: 2px 10px;
+    color: #555;
+    font-style: italic;
+  }
+  .measure-description a              { color: #1971c2; text-decoration: underline; }
+
+  /* Search bar */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  #search-input {
+    flex: 1;
+    max-width: 360px;
+    padding: 6px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  #search-input:focus {
+    outline: none;
+    border-color: #339AF0;
+    box-shadow: 0 0 0 2px rgba(51,154,240,0.2);
+  }
+  .clear-search-btn {
+    border: none;
+    background: #868e96;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+
+  /* Project badges */
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 10px;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 3px;
+  }
+  .badge.maxed   { background-color: #FF922B; }
+  .badge.mr21    { background-color: #339AF0; }
+  .badge.powered { background-color: #9B59B6; }
+
+  /* Row colours */
+  tr.shared-all td { background-color: #e8f5e9; }
+  tr.shared-two td { background-color: #fff8e1; }
+  tr.unique     td { background-color: #fce4ec; }
+
+  /* Filter buttons */
+  .filter-bar, .var-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+  .filter-bar { margin-bottom: 4px; }
+  .filter-btn {
+    border: none;
+    padding: 6px 14px;
+    border-radius: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    opacity: 0.35;
+    transition: all 0.18s ease-in-out;
+  }
+  .filter-btn.active {
+    opacity: 1;
+    transform: scale(1.06);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .filter-btn.maxed   { background-color: #FF922B; color: white; }
+  .filter-btn.mr21    { background-color: #339AF0; color: white; }
+  .filter-btn.powered { background-color: #9B59B6; color: white; }
+  .filter-btn.reset   { background-color: #868e96; color: white; opacity: 0.8; }
+  .filter-btn.reset:hover { opacity: 1; }
+
+  #active-filter-summary { margin-bottom: 10px; font-size: 12px; color: #555; min-height: 22px; }
+
+  .var-filter-btn {
+    border: none;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: all 0.18s ease-in-out;
+  }
+  .var-filter-btn.active {
+    opacity: 1;
+    transform: scale(1.06);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .var-filter-btn.all-vars       { background-color: #868e96; color: white; }
+  .var-filter-btn.shared-all-btn { background-color: #43a047; color: white; }
+
+  .legend { font-size: 11px; color: #555; margin-bottom: 14px; }
+  .legend span {
+    display: inline-block; width: 12px; height: 12px;
+    border-radius: 3px; margin-right: 4px; vertical-align: middle;
+  }
+  .leg-all  { background-color: #c8e6c9; }
+  .leg-two  { background-color: #fff9c4; }
+  .leg-uniq { background-color: #f8bbd0; }
+
+  /* Measure blocks */
+  details.measure-block {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  details.measure-block > summary {
+    padding: 10px 14px;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    user-select: none;
+  }
+  details.measure-block > summary::-webkit-details-marker { display: none; }
+  details.measure-block[open] > summary {
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid #dee2e6;
+  }
+  .measure-count { font-size: 11px; color: #888; margin-left: 4px; }
+  .details-content { padding: 12px; }
+  .shared-measure-badge {
+    font-size: 10px; font-weight: 700;
+    padding: 2px 7px; border-radius: 8px; color: white;
+  }
+  .shared-measure-badge.shared-all { background: #43a047; }
+  .shared-measure-badge.shared-two { background: #f9a825; }
+  .shared-measure-badge.unique     { background: #e53935; }
+
+  table.dict-table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+  }
+  table.dict-table th {
+    padding: 6px 10px; text-align: left;
+    background: #f1f3f5; font-weight: 700;
+    border-bottom: 2px solid #dee2e6;
+  }
+  table.dict-table td { padding: 5px 10px; border-bottom: 1px solid #eee; }
+</style>
+")
+
+# ==============================
+# FILTER CONTROLS + JS
+# ==============================
+filter_controls <- HTML("
+<!-- SEARCH BAR -->
+<div class='search-bar'>
+  <strong style='font-size:13px;'>Search:</strong>
+  <input type='text' id='search-input' placeholder='Search variable name, label, or measure...' oninput='applyFilters()'>
+  <button class='clear-search-btn' onclick='clearSearch()'>Clear</button>
+</div>
+
+<!-- PROJECT FILTER -->
+<div class='filter-bar'>
+  <strong style='margin-right:4px; font-size:13px;'>Filter by project:</strong>
+  <button id='btn-maxed'   class='filter-btn maxed'   onclick='toggleProject(\"MAXED\")'>MAXED</button>
+  <button id='btn-mr21'    class='filter-btn mr21'    onclick='toggleProject(\"MR21\")'>MR21</button>
+  <button id='btn-powered' class='filter-btn powered' onclick='toggleProject(\"POWERED\")'>POWERED</button>
+  <button id='btn-reset'   class='filter-btn reset'   onclick='resetAll()'>&#x21BA; Reset</button>
+</div>
+
+<div id='active-filter-summary'><em>Showing all projects</em></div>
+
+<div class='var-filter-bar'>
+  <strong style='margin-right:4px; font-size:13px;'>Show:</strong>
+  <button id='vbtn-all'    class='var-filter-btn all-vars active' onclick='filterVar(\"ALL\")'>All Variables</button>
+  <button id='vbtn-shared' class='var-filter-btn shared-all-btn'  onclick='filterVar(\"SHARED\")'>&#x2713; Shared Variables</button>
+</div>
+
+<div class='legend'>
+  Row colours &nbsp;
+  <span class='leg-all'></span> Variable in all 3 projects &nbsp;
+  <span class='leg-two'></span> Variable in 2 projects &nbsp;
+  <span class='leg-uniq'></span> Variable unique to 1 project
+</div>
+
+<script>
+var selectedProjects = [];
+var activeVar = 'ALL';
+
+function toggleProject(project) {
+  var idx = selectedProjects.indexOf(project);
+  var btnId = 'btn-' + project.toLowerCase();
+  if (idx === -1) {
+    selectedProjects.push(project);
+    document.getElementById(btnId).classList.add('active');
+  } else {
+    selectedProjects.splice(idx, 1);
+    document.getElementById(btnId).classList.remove('active');
+  }
+  updateSummary();
+  applyFilters();
+}
+
+function resetAll() {
+  selectedProjects = [];
+  activeVar = 'ALL';
+  document.getElementById('search-input').value = '';
+  document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.var-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('vbtn-all').classList.add('active');
+  updateSummary();
+  applyFilters();
+}
+
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  applyFilters();
+}
+
+function updateSummary() {
+  var el = document.getElementById('active-filter-summary');
+  if (selectedProjects.length === 0) {
+    el.innerHTML = '<em>Showing all projects</em>';
+    return;
+  }
+  var colorMap = { MAXED: '#FF922B', MR21: '#339AF0', POWERED: '#9B59B6' };
+  var pills = selectedProjects.map(function(p) {
+    return '<span style=\"display:inline-block;background:' + colorMap[p] +
+           ';color:white;border-radius:10px;padding:2px 9px;' +
+           'font-size:11px;font-weight:700;margin-right:4px;\">' + p + '</span>';
+  }).join('');
+  el.innerHTML = 'Showing: ' + pills;
+}
+
+function filterVar(level) {
+  activeVar = level;
+  document.querySelectorAll('.var-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+  var vmap = { 'ALL': 'vbtn-all', 'SHARED': 'vbtn-shared' };
+  document.getElementById(vmap[level]).classList.add('active');
+  applyFilters();
+}
+
+function applyFilters() {
+  var searchTerm = (document.getElementById('search-input').value || '').toLowerCase().trim();
+
+  document.querySelectorAll('.measure-block').forEach(function(block) {
+    var mProjects   = (block.getAttribute('data-projects') || '').split(' ');
+    var measureName = (block.getAttribute('data-measure-name') || '').toLowerCase();
+
+    var measureProjOk = selectedProjects.length === 0 ||
+                        selectedProjects.some(function(p) { return mProjects.indexOf(p) !== -1; });
+
+    if (!measureProjOk) {
+      block.style.display = 'none';
+      return;
+    }
+
+    var measureNameMatches = searchTerm === '' || measureName.indexOf(searchTerm) !== -1;
+    var visibleCount = 0;
+
+    block.querySelectorAll('tr[data-varshared]').forEach(function(row) {
+      var vProjects = (row.getAttribute('data-varprojects') || '').split(' ').filter(Boolean);
+
+      var rowProjOk = selectedProjects.length === 0 ||
+                      selectedProjects.some(function(p) { return vProjects.indexOf(p) !== -1; });
+
+      var rowVarOk = true;
+      if (activeVar === 'SHARED') {
+        if (selectedProjects.length >= 2) {
+          rowVarOk = selectedProjects.every(function(p) { return vProjects.indexOf(p) !== -1; });
+        } else {
+          rowVarOk = vProjects.length >= 2;
+        }
+      }
+
+      var rowSearchOk = true;
+      if (searchTerm !== '' && !measureNameMatches) {
+        var cells = row.querySelectorAll('td');
+        var variableText = (cells[0] ? cells[0].textContent : '').toLowerCase();
+        var labelText    = (cells[1] ? cells[1].textContent : '').toLowerCase();
+        rowSearchOk = variableText.indexOf(searchTerm) !== -1 ||
+                      labelText.indexOf(searchTerm) !== -1;
+      }
+
+      var show = rowProjOk && rowVarOk && rowSearchOk;
+      row.style.display = show ? '' : 'none';
+      if (show) visibleCount++;
+    });
+
+    block.style.display = visibleCount > 0 ? '' : 'none';
+
+    if (searchTerm !== '' && visibleCount > 0) {
+      block.setAttribute('open', '');
+    }
+  });
+}
+</script>
+")
+
+# ==============================
+# BUILD MEASURE SECTIONS
+# ==============================
+measure_sections <- lapply(measure_list, function(measure_name) {
+
+  vars       <- comparison1 %>% filter(Measure == measure_name)
+  badge_row  <- measure_badge_df %>% filter(Measure == measure_name)
+  badge_html <- if (nrow(badge_row) > 0) badge_row$MeasureBadges[1] else ""
+  mc         <- if (nrow(badge_row) > 0) badge_row$MeasureCount[1]  else 1
+
+  shared_label <- if (mc == 3) "shared-all" else if (mc == 2) "shared-two" else "unique"
+  shared_text  <- if (mc == 3) "All 3 projects" else if (mc == 2) "2 projects" else "1 project"
+  shared_badge <- sprintf("<span class='shared-measure-badge %s'>%s</span>",
+                          shared_label, shared_text)
+
+  n_vars      <- n_distinct(vars$Variable)
+  count_label <- sprintf("<span class='measure-count'>(%d variables)</span>", n_vars)
+
+  vars_tbl  <- vars %>% select(Variable, Label, Value, Project, VarShared, VarProjects)
+  rows_html <- apply(vars_tbl, 1, function(row) {
+    proj_badges <- make_project_badges(row[["VarProjects"]])
+    sprintf(
+      "<tr class='%s' data-varshared='%s' data-varprojects='%s'>
+         <td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>
+       </tr>",
+      row[["VarShared"]], row[["VarShared"]], row[["VarProjects"]],
+      htmltools::htmlEscape(row[["Variable"]]),
+      htmltools::htmlEscape(row[["Label"]]   %||% ""),
+      htmltools::htmlEscape(row[["Value"]]   %||% ""),
+      htmltools::htmlEscape(row[["Project"]]),
+      proj_badges
+    )
+  })
+  rows_html <- paste(rows_html, collapse = "\n")
+
+  tbl_html <- sprintf(
+    "<div style='overflow-x:auto;'>
+       <table class='dict-table'>
+         <thead>
+           <tr><th>Variable</th><th>Label</th><th>Value</th><th>Project</th><th>In Projects</th></tr>
+         </thead>
+         <tbody>%s</tbody>
+       </table>
+     </div>",
+    rows_html
+  )
+
+  # Build the description block (markdown -> HTML), then prepend it to the table
+  desc_html <- sprintf(
+    "<div class='measure-description'>%s</div>",
+    get_description(measure_name)
+  )
+
+  tags$details(
+    class               = "measure-block",
+    `data-projects`     = paste(sort(unique(na.omit(vars$Project))), collapse = " "),
+    `data-measure-name` = measure_name,
+    tags$summary(
+      HTML(paste0(
+        "<strong>", htmltools::htmlEscape(measure_name), "</strong>",
+        " ", badge_html, " ", shared_badge, " ", count_label
+      ))
+    ),
+    tags$div(
+      class = "details-content",
+      HTML(paste0(desc_html, tbl_html))
+    )
+  )
+})
+
+# ==============================
+# FINAL OUTPUT
+# ==============================
+tagList(
+  css,
+  filter_controls,
+  tagList(measure_sections)
+)
+```

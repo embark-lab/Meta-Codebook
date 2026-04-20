@@ -1,0 +1,1 @@
+The **Analogous Exercise Decisions** is a lab made measure is a 21 item self-report questionnaire. The first 10 questions assesses an individuals tendency to 

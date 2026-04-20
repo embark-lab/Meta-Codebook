@@ -1,0 +1,259 @@
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+# Demographics variables {#demo}
+##Demographic Collection Form 
+
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+library(dplyr)
+library(tidyr)
+library(DT)
+library(htmltools)
+library(shiny)
+library(fontawesome)
+library(readxl)
+
+comparison1 <- read_xlsx("Codebook/comparison_codebook.xlsx")
+
+```
+
+```{css, echo=FALSE}
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:8px;
+  color:white;
+  font-size:12px;
+  font-weight:bold;
+  margin-right:4px;
+}
+.badge.maxed { background:#FF922B; }
+.badge.mr21  { background:#339AF0; }
+
+.toggle-btn {
+  padding:8px 14px;
+  border-radius:6px;
+  border:none;
+  margin-right:6px;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+.btn-shared { background:#2ECC71; }
+.btn-maxed  { background:#FF922B; }
+.btn-mr21   { background:#339AF0; }
+
+table.dataTable tbody tr:nth-child(even){ background:#f7f9fc; }
+table.dataTable tbody tr:nth-child(odd) { background:#ffffff; }
+table.dataTable tbody tr:hover{ background:#e6f2ff; }
+
+
+```
+
+Demographic Variables
+
+```{r, echo=FALSE, results='asis'}
+
+# ----------------------------------------------------
+# LOAD CODEBOOKS
+# ----------------------------------------------------
+maxed <- read.csv("Codebook/codebook.csv", stringsAsFactors = FALSE)
+mr21  <- read.csv("codebook/mr21_codebook.csv", stringsAsFactors = FALSE)
+
+DATA_FORM <- "data_collection_form"
+
+maxed_demo <- maxed %>% filter(Form.Name == DATA_FORM)
+mr21_demo  <- mr21  %>% filter(Form.Name == DATA_FORM)
+
+# ----------------------------------------------------
+# TAGS & ICONS
+# ----------------------------------------------------
+tag_maxed <- "<span class='badge maxed'>MAXED</span>"
+tag_mr21  <- "<span class='badge mr21'>MR21</span>"
+
+icon_shared   <- as.character(fa("check-circle", fill = "#2ECC71"))
+icon_unique_x <- as.character(fa("times-circle", fill = "#E74C3C"))
+
+# ----------------------------------------------------
+# MERGE CODEBOOK VARIABLES
+# ----------------------------------------------------
+all_vars <- union(maxed_demo$Variable...Field.Name, mr21_demo$Variable...Field.Name)
+
+comparison <- data.frame(Variable = all_vars) %>% 
+  left_join(
+    maxed_demo %>% select(
+      Variable = Variable...Field.Name,
+      label_maxed  = `Field.Label`,
+      values_maxed = `Choices..Calculations..OR.Slider.Labels`
+    ),
+    by = "Variable"
+  ) %>%
+  left_join(
+    mr21_demo %>% select(
+      Variable = Variable...Field.Name,
+      label_mr21  = `Field.Label`,
+      values_mr21 = `Choices..Calculations..OR.Slider.Labels`
+    ),
+    by = "Variable"
+  ) %>%
+  mutate(
+    Project = case_when(
+      !is.na(label_maxed) & !is.na(label_mr21) ~ paste(tag_maxed, tag_mr21),
+      !is.na(label_maxed) ~ tag_maxed,
+      !is.na(label_mr21) ~ tag_mr21
+    ),
+    Status = case_when(
+      !is.na(label_maxed) & !is.na(label_mr21) ~ icon_shared,
+      TRUE ~ icon_unique_x
+    ),
+    Filter = case_when(
+      !is.na(label_maxed) & !is.na(label_mr21) ~ "shared",
+      !is.na(label_maxed) ~ "maxed",
+      !is.na(label_mr21) ~ "mr21"
+    )
+  )
+
+
+#save comparison table for use in other Rmd files
+
+
+# ----------------------------------------------------
+# TOGGLE BUTTONS
+# ----------------------------------------------------
+toggle_html <- HTML("
+<div style='margin-bottom:10px;'>
+<button class='toggle-btn btn-shared' onclick=\"filterTable('shared')\">Shared</button>
+<button class='toggle-btn btn-maxed' onclick=\"filterTable('maxed')\">MAXED</button>
+<button class='toggle-btn btn-mr21' onclick=\"filterTable('mr21')\">MR21</button>
+</div>
+
+<script>
+function filterTable(category){
+  var table = $('#comparison_table').DataTable();
+  if(category === 'all'){
+    table.column(7).search('').draw();
+  } else {
+    table.column(7).search(category).draw();
+  }
+}
+</script>
+")
+
+# ----------------------------------------------------
+# DATATABLE (FULL WIDTH + SCROLLABLE)
+# ----------------------------------------------------
+tbl <- htmltools::div(style = "width: 100%; overflow-x: auto;",
+  datatable(
+    comparison %>%
+      select(Status, Project, Variable, label_maxed, values_maxed, label_mr21, values_mr21, Filter),
+    escape = FALSE,
+    rownames = FALSE,
+    filter = "top",
+    options = list(
+      dom = "Bfrtip",
+      buttons = c("csv"),
+      pageLength = 20,
+      scrollX = TRUE,
+      autoWidth = TRUE,
+      columnDefs = list(
+        list(visible = FALSE, targets = 7),
+        list(width = "60px",  targets = 0),  # Status
+        list(width = "180px", targets = 1), # Project
+        list(width = "250px", targets = 2)  # Variable
+      )
+    ),
+    container = tags$table(id = "comparison_table")
+  )
+)
+
+# ----------------------------------------------------
+# COLLAPSIBLE SECTION
+# ----------------------------------------------------
+htmltools::tagList(
+  HTML("<details><summary><strong>DCF Variables</strong></summary>"),
+  toggle_html,
+  tbl,
+  HTML("</details>")
+)
+
+
+```
+
+#Anthrometropretic Measures {#weight}
+
+```{r}
+weight_measures <- comparison1 |> 
+  #filter for bmi measures and height measure in label
+  filter(grepl("bmi|height", Label, ignore.case = TRUE)) |> 
+   mutate(
+    Project = case_when(
+      In_MAXED ==TRUE & In_MR21 ==TRUE ~ paste(tag_maxed, tag_mr21),
+      In_MAXED == TRUE ~ tag_maxed,
+      In_MR21 == TRUE ~ tag_mr21))
+
+# ----------------------------------------------------
+# TOGGLE BUTTONS
+# ----------------------------------------------------
+toggle_html1 <- HTML("
+<div style='margin-bottom:10px;'>
+<button class='toggle-btn btn-shared' onclick=\"filterTable('shared')\">Shared</button>
+<button class='toggle-btn btn-maxed' onclick=\"filterTable('maxed')\">MAXED</button>
+<button class='toggle-btn btn-mr21' onclick=\"filterTable('mr21')\">MR21</button>
+</div>
+
+<script>
+function filterTable(category){
+  var table = $('#weight_measures').DataTable();
+  if(category === 'all'){
+    table.column(5).search('').draw();
+  } else {
+    table.column(5).search(category).draw();
+  }
+}
+</script>
+")
+
+# ----------------------------------------------------
+# DATATABLE (FULL WIDTH + SCROLLABLE)
+# ----------------------------------------------------
+tbl_anthro <- htmltools::div(style = "width: 100%; overflow-x: auto;",
+  datatable(
+    weight_measures %>%
+      select(ProjectTag, Variable, Label, In_MAXED, In_MR21, VarFilter),
+    escape = FALSE,
+    rownames = FALSE,
+    filter = "top",
+    options = list(
+      dom = "Bfrtip",
+      buttons = c("csv"),
+      pageLength = 20,
+      scrollX = TRUE,
+      autoWidth = TRUE,
+      columnDefs = list(
+        list(visible = FALSE, targets = 5),
+        list(width = "60px",  targets = 1),  # Status
+        list(width = "180px", targets = 2), # Project
+        list(width = "250px", targets = 3)  # Variable
+      )
+    ),
+    container = tags$table(id = "weight_measures")
+  )
+)
+
+# ----------------------------------------------------
+# COLLAPSIBLE SECTION
+# ----------------------------------------------------
+htmltools::tagList(
+  HTML("<details><summary><strong> Anthropometric
+       Variables </strong></summary>"),
+  toggle_html1,
+  tbl_anthro,
+  HTML("</details>")
+  )
+
+```
+

@@ -1,0 +1,11 @@
+# Introduction {#intro}
+
+This codebook encompasses all measures across various projects in the Embark Lab.
+
+You can navigate by project, measure, or type of variable you are looking for. If you are looking for more information on individual projects you can find links to their individual codebooks here:
+
+MAXED and MR21:
+
+POWERED:
+
+BAM:
