@@ -118,14 +118,14 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  pdftitle={A Minimal Book Example},
-  pdfauthor={Yihui Xie},
+  pdftitle={Meta Code Book},
+  pdfauthor={Mahathi Gavuji},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
-\title{A Minimal Book Example}
-\author{Yihui Xie}
-\date{2025-11-23}
+\title{Meta Code Book}
+\author{Mahathi Gavuji}
+\date{2026-04-20}
 
 \begin{document}
 \maketitle
@@ -134,119 +134,104 @@
 \setcounter{tocdepth}{1}
 \tableofcontents
 }
-\chapter{Prerequisites}\label{prerequisites}
+\chapter{Introduction}\label{introduction}
 
-This is a \emph{sample} book written in \textbf{Markdown}. You can use anything that Pandoc's Markdown supports, e.g., a math equation \(a^2 + b^2 = c^2\).
-
-The \textbf{bookdown} package can be installed from CRAN or Github:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{install.packages}\NormalTok{(}\StringTok{"bookdown"}\NormalTok{)}
-\CommentTok{\# or the development version}
-\CommentTok{\# devtools::install\_github("rstudio/bookdown")}
-\end{Highlighting}
-\end{Shaded}
-
-Remember each Rmd file contains one and only one chapter, and a chapter is defined by the first-level heading \texttt{\#}.
-
-To compile this example to PDF, you need XeLaTeX. You are recommended to install TinyTeX (which includes XeLaTeX): \url{https://yihui.org/tinytex/}.
+This codebook contains information of each measure utilized in varying studies conducted in the Embark Lab.
 
 \chapter{Introduction}\label{intro}
 
-You can label chapter and section titles using \texttt{\{\#label\}} after them, e.g., we can reference Chapter \ref{intro}. If you do not manually label them, there will be automatic labels anyway, e.g., Chapter \ref{methods}.
+This codebook encompasses all measures across various projects in the Embark Lab.
 
-Figures and tables with captions will be placed in \texttt{figure} and \texttt{table} environments, respectively.
+You can navigate by project, measure, or type of variable you are looking for. If you are looking for more information on individual projects you can find links to their individual codebooks here:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{par}\NormalTok{(}\AttributeTok{mar =} \FunctionTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{4}\NormalTok{, .}\DecValTok{1}\NormalTok{, .}\DecValTok{1}\NormalTok{))}
-\FunctionTok{plot}\NormalTok{(pressure, }\AttributeTok{type =} \StringTok{\textquotesingle{}b\textquotesingle{}}\NormalTok{, }\AttributeTok{pch =} \DecValTok{19}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+MAXED and MR21:
 
-\begin{figure}
+POWERED:
 
-{\centering \includegraphics[width=0.8\linewidth]{bookdown-demo_files/figure-latex/nice-fig-1} 
+BAM:
 
-}
+\chapter{Demographics variables}\label{demo}
 
-\caption{Here is a nice figure!}\label{fig:nice-fig}
-\end{figure}
+\#\#Demographic Collection Form
 
-Reference a figure by its code chunk label with the \texttt{fig:} prefix, e.g., see Figure \ref{fig:nice-fig}. Similarly, you can reference tables generated from \texttt{knitr::kable()}, e.g., see Table \ref{tab:nice-tab}.
+Demographic Variables
+
+\#Anthrometropretic Measures \{\#weight\}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}
-  \FunctionTok{head}\NormalTok{(iris, }\DecValTok{20}\NormalTok{), }\AttributeTok{caption =} \StringTok{\textquotesingle{}Here is a nice table!\textquotesingle{}}\NormalTok{,}
-  \AttributeTok{booktabs =} \ConstantTok{TRUE}
+\NormalTok{weight\_measures }\OtherTok{\textless{}{-}}\NormalTok{ comparison1 }\SpecialCharTok{|\textgreater{}} 
+  \CommentTok{\#filter for bmi measures and height measure in label}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{grepl}\NormalTok{(}\StringTok{"bmi|height"}\NormalTok{, Label, }\AttributeTok{ignore.case =} \ConstantTok{TRUE}\NormalTok{)) }\SpecialCharTok{|\textgreater{}} 
+   \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{Project =} \FunctionTok{case\_when}\NormalTok{(}
+\NormalTok{      In\_MAXED }\SpecialCharTok{==}\ConstantTok{TRUE} \SpecialCharTok{\&}\NormalTok{ In\_MR21 }\SpecialCharTok{==}\ConstantTok{TRUE} \SpecialCharTok{\textasciitilde{}} \FunctionTok{paste}\NormalTok{(tag\_maxed, tag\_mr21),}
+\NormalTok{      In\_MAXED }\SpecialCharTok{==} \ConstantTok{TRUE} \SpecialCharTok{\textasciitilde{}}\NormalTok{ tag\_maxed,}
+\NormalTok{      In\_MR21 }\SpecialCharTok{==} \ConstantTok{TRUE} \SpecialCharTok{\textasciitilde{}}\NormalTok{ tag\_mr21))}
+
+\CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+\CommentTok{\# TOGGLE BUTTONS}
+\CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+\NormalTok{toggle\_html1 }\OtherTok{\textless{}{-}} \FunctionTok{HTML}\NormalTok{(}\StringTok{"}
+\StringTok{\textless{}div style=\textquotesingle{}margin{-}bottom:10px;\textquotesingle{}\textgreater{}}
+\StringTok{\textless{}button class=\textquotesingle{}toggle{-}btn btn{-}shared\textquotesingle{} onclick=}\SpecialCharTok{\textbackslash{}"}\StringTok{filterTable(\textquotesingle{}shared\textquotesingle{})}\SpecialCharTok{\textbackslash{}"}\StringTok{\textgreater{}Shared\textless{}/button\textgreater{}}
+\StringTok{\textless{}button class=\textquotesingle{}toggle{-}btn btn{-}maxed\textquotesingle{} onclick=}\SpecialCharTok{\textbackslash{}"}\StringTok{filterTable(\textquotesingle{}maxed\textquotesingle{})}\SpecialCharTok{\textbackslash{}"}\StringTok{\textgreater{}MAXED\textless{}/button\textgreater{}}
+\StringTok{\textless{}button class=\textquotesingle{}toggle{-}btn btn{-}mr21\textquotesingle{} onclick=}\SpecialCharTok{\textbackslash{}"}\StringTok{filterTable(\textquotesingle{}mr21\textquotesingle{})}\SpecialCharTok{\textbackslash{}"}\StringTok{\textgreater{}MR21\textless{}/button\textgreater{}}
+\StringTok{\textless{}/div\textgreater{}}
+
+\StringTok{\textless{}script\textgreater{}}
+\StringTok{function filterTable(category)\{}
+\StringTok{  var table = $(\textquotesingle{}\#weight\_measures\textquotesingle{}).DataTable();}
+\StringTok{  if(category === \textquotesingle{}all\textquotesingle{})\{}
+\StringTok{    table.column(5).search(\textquotesingle{}\textquotesingle{}).draw();}
+\StringTok{  \} else \{}
+\StringTok{    table.column(5).search(category).draw();}
+\StringTok{  \}}
+\StringTok{\}}
+\StringTok{\textless{}/script\textgreater{}}
+\StringTok{"}\NormalTok{)}
+
+\CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+\CommentTok{\# DATATABLE (FULL WIDTH + SCROLLABLE)}
+\CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+\NormalTok{tbl\_anthro }\OtherTok{\textless{}{-}}\NormalTok{ htmltools}\SpecialCharTok{::}\FunctionTok{div}\NormalTok{(}\AttributeTok{style =} \StringTok{"width: 100\%; overflow{-}x: auto;"}\NormalTok{,}
+  \FunctionTok{datatable}\NormalTok{(}
+\NormalTok{    weight\_measures }\SpecialCharTok{\%\textgreater{}\%}
+      \FunctionTok{select}\NormalTok{(ProjectTag, Variable, Label, In\_MAXED, In\_MR21, VarFilter),}
+    \AttributeTok{escape =} \ConstantTok{FALSE}\NormalTok{,}
+    \AttributeTok{rownames =} \ConstantTok{FALSE}\NormalTok{,}
+    \AttributeTok{filter =} \StringTok{"top"}\NormalTok{,}
+    \AttributeTok{options =} \FunctionTok{list}\NormalTok{(}
+      \AttributeTok{dom =} \StringTok{"Bfrtip"}\NormalTok{,}
+      \AttributeTok{buttons =} \FunctionTok{c}\NormalTok{(}\StringTok{"csv"}\NormalTok{),}
+      \AttributeTok{pageLength =} \DecValTok{20}\NormalTok{,}
+      \AttributeTok{scrollX =} \ConstantTok{TRUE}\NormalTok{,}
+      \AttributeTok{autoWidth =} \ConstantTok{TRUE}\NormalTok{,}
+      \AttributeTok{columnDefs =} \FunctionTok{list}\NormalTok{(}
+        \FunctionTok{list}\NormalTok{(}\AttributeTok{visible =} \ConstantTok{FALSE}\NormalTok{, }\AttributeTok{targets =} \DecValTok{5}\NormalTok{),}
+        \FunctionTok{list}\NormalTok{(}\AttributeTok{width =} \StringTok{"60px"}\NormalTok{,  }\AttributeTok{targets =} \DecValTok{1}\NormalTok{),  }\CommentTok{\# Status}
+        \FunctionTok{list}\NormalTok{(}\AttributeTok{width =} \StringTok{"180px"}\NormalTok{, }\AttributeTok{targets =} \DecValTok{2}\NormalTok{), }\CommentTok{\# Project}
+        \FunctionTok{list}\NormalTok{(}\AttributeTok{width =} \StringTok{"250px"}\NormalTok{, }\AttributeTok{targets =} \DecValTok{3}\NormalTok{)  }\CommentTok{\# Variable}
+\NormalTok{      )}
+\NormalTok{    ),}
+    \AttributeTok{container =}\NormalTok{ tags}\SpecialCharTok{$}\FunctionTok{table}\NormalTok{(}\AttributeTok{id =} \StringTok{"weight\_measures"}\NormalTok{)}
+\NormalTok{  )}
 \NormalTok{)}
+
+\CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+\CommentTok{\# COLLAPSIBLE SECTION}
+\CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+\NormalTok{htmltools}\SpecialCharTok{::}\FunctionTok{tagList}\NormalTok{(}
+  \FunctionTok{HTML}\NormalTok{(}\StringTok{"\textless{}details\textgreater{}\textless{}summary\textgreater{}\textless{}strong\textgreater{} Anthropometric}
+\StringTok{       Variables \textless{}/strong\textgreater{}\textless{}/summary\textgreater{}"}\NormalTok{),}
+\NormalTok{  toggle\_html1,}
+\NormalTok{  tbl\_anthro,}
+  \FunctionTok{HTML}\NormalTok{(}\StringTok{"\textless{}/details\textgreater{}"}\NormalTok{)}
+\NormalTok{  )}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{table}
-
-\caption{\label{tab:nice-tab}Here is a nice table!}
-\centering
-\begin{tabular}[t]{rrrrl}
-\toprule
-Sepal.Length & Sepal.Width & Petal.Length & Petal.Width & Species\\
-\midrule
-5.1 & 3.5 & 1.4 & 0.2 & setosa\\
-4.9 & 3.0 & 1.4 & 0.2 & setosa\\
-4.7 & 3.2 & 1.3 & 0.2 & setosa\\
-4.6 & 3.1 & 1.5 & 0.2 & setosa\\
-5.0 & 3.6 & 1.4 & 0.2 & setosa\\
-\addlinespace
-5.4 & 3.9 & 1.7 & 0.4 & setosa\\
-4.6 & 3.4 & 1.4 & 0.3 & setosa\\
-5.0 & 3.4 & 1.5 & 0.2 & setosa\\
-4.4 & 2.9 & 1.4 & 0.2 & setosa\\
-4.9 & 3.1 & 1.5 & 0.1 & setosa\\
-\addlinespace
-5.4 & 3.7 & 1.5 & 0.2 & setosa\\
-4.8 & 3.4 & 1.6 & 0.2 & setosa\\
-4.8 & 3.0 & 1.4 & 0.1 & setosa\\
-4.3 & 3.0 & 1.1 & 0.1 & setosa\\
-5.8 & 4.0 & 1.2 & 0.2 & setosa\\
-\addlinespace
-5.7 & 4.4 & 1.5 & 0.4 & setosa\\
-5.4 & 3.9 & 1.3 & 0.4 & setosa\\
-5.1 & 3.5 & 1.4 & 0.3 & setosa\\
-5.7 & 3.8 & 1.7 & 0.3 & setosa\\
-5.1 & 3.8 & 1.5 & 0.3 & setosa\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-You can write citations, too. For example, we are using the \textbf{bookdown} package \citep{R-bookdown} in this sample book, which was built on top of R Markdown and \textbf{knitr} \citep{xie2015}.
-
-\chapter{Literature}\label{literature}
-
-Here is a review of existing methods.
-
-\chapter{Methods}\label{methods}
-
-We describe our methods in this chapter.
-
-Math can be added in body using usual syntax like this
-
-\section{math example}\label{math-example}
-
-\(p\) is unknown but expected to be around 1/3. Standard error will be approximated
-
-\[
-SE = \sqrt{\frac{p(1-p)}{n}} \approx \sqrt{\frac{1/3 (1 - 1/3)} {300}} = 0.027
-\]
-
-You can also use math in footnotes like this\footnote{where we mention \(p = \frac{a}{b}\)}.
-
-We will approximate standard error to 0.027\footnote{\(p\) is unknown but expected to be around 1/3. Standard error will be approximated
-
-  \[
-  SE = \sqrt{\frac{p(1-p)}{n}} \approx \sqrt{\frac{1/3 (1 - 1/3)} {300}} = 0.027
-  \]}
+\chapter{All Measures}\label{all-measures}
 
 \chapter{Applications}\label{applications}
 
@@ -256,10 +241,12 @@ Some \emph{significant} applications are demonstrated in this chapter.
 
 \section{Example two}\label{example-two}
 
+hi i mam try
+
 \chapter{Final Words}\label{final-words}
 
 We have finished a nice book.
 
-\bibliography{book.bib,packages.bib}
+\bibliography{packages.bib}
 
 \end{document}
