@@ -4,16 +4,16 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Chapter 11 Final Words | Meta Code Book</title>
+<title>Notes &amp; caveats | Meta Code Book</title>
 <meta name="author" content="Mahathi Gavuji">
-<meta name="description" content="We have finished a nice book.">
+<meta name="description" content="Mixed intake forms (DCF, DCF-Parents, Study Visit A/B/C Collection Forms) are split heuristically; review entries flagged in Administrative / Other to confirm none should be promoted to a...">
 <meta name="generator" content="bookdown 0.45 with bs4_book()">
-<meta property="og:title" content="Chapter 11 Final Words | Meta Code Book">
+<meta property="og:title" content="Notes &amp; caveats | Meta Code Book">
 <meta property="og:type" content="book">
-<meta property="og:description" content="We have finished a nice book.">
+<meta property="og:description" content="Mixed intake forms (DCF, DCF-Parents, Study Visit A/B/C Collection Forms) are split heuristically; review entries flagged in Administrative / Other to confirm none should be promoted to a...">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Chapter 11 Final Words | Meta Code Book">
-<meta name="twitter:description" content="We have finished a nice book.">
+<meta name="twitter:title" content="Notes &amp; caveats | Meta Code Book">
+<meta name="twitter:description" content="Mixed intake forms (DCF, DCF-Parents, Study Visit A/B/C Collection Forms) are split heuristically; review entries flagged in Administrative / Other to confirm none should be promoted to a...">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
 <script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.9.0.9002/transition.js"></script><script src="libs/bs3compat-0.9.0.9002/tabs.js"></script><script src="libs/bs3compat-0.9.0.9002/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
@@ -60,9 +60,9 @@
 <li><a class="" href="eating-disorder-behaviors.html"><span class="header-section-number">8</span> Eating Disorder Behaviors</a></li>
 <li><a class="" href="socio-behavioral.html"><span class="header-section-number">9</span> Socio-behavioral</a></li>
 <li><a class="" href="administrative-other.html">Administrative / Other</a></li>
-<li><a class="" href="notes-caveats.html">Notes &amp; caveats</a></li>
+<li><a class="active" href="notes-caveats.html">Notes &amp; caveats</a></li>
 <li><a class="" href="applications.html"><span class="header-section-number">10</span> Applications</a></li>
-<li><a class="active" href="final-words.html"><span class="header-section-number">11</span> Final Words</a></li>
+<li><a class="" href="final-words.html"><span class="header-section-number">11</span> Final Words</a></li>
 <li><a class="" href="references.html">References</a></li>
 </ul>
 
@@ -71,19 +71,32 @@
         </div>
       </nav>
 </div>
-  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="final-words" class="section level1" number="11">
-<h1>
-<span class="header-section-number">11</span> Final Words<a class="anchor" aria-label="anchor" href="#final-words"><i class="fas fa-link"></i></a>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="notes-caveats" class="section level1 unnumbered">
+<h1>Notes &amp; caveats<a class="anchor" aria-label="anchor" href="#notes-caveats"><i class="fas fa-link"></i></a>
 </h1>
-<p>We have finished a nice book.</p>
+<ul>
+<li>
+<strong>Mixed intake forms</strong> (DCF, DCF-Parents, Study Visit A/B/C Collection Forms) are split heuristically; review entries flagged in <em>Administrative / Other</em> to confirm none should be promoted to a substantive category.</li>
+<li>
+<strong>Duplicate variable names</strong> across projects are collapsed into a single row with all source projects listed as badges. If the same name refers to different constructs in different projects, split them in <code>codebook.csv</code> before rendering.</li>
+<li>
+<strong>Value coding</strong> is reproduced from the source REDCap export and truncated to 180 chars in the category tables — full strings are preserved in <code>codebook.csv</code>.</li>
+<li>
+<strong>ART (Athletes’ Relationship with Training)</strong> is placed under <em>Eating Disorder Behaviors</em> because of its use in assessing compulsive exercise in ED populations. Move it to <em>Socio-behavioral</em> if you prefer a behavioral-trait framing.</li>
+<li>
+<strong>ASI</strong> is treated as the <em>Anxiety Sensitivity Index</em> (socio-behavioral), not an eating-symptom inventory.</li>
+<li>
+<strong>Tanner Stages / PDS</strong> are treated as anthropometric/maturation indicators. Move them in <code>codebook.csv</code> if your analyses treat them as medical history.</li>
+</ul>
+<p>To refine categorization, edit <code>codebook.csv</code> (hand-correct the <code>category</code> column) and re-render.</p>
 
 </div>
   <div class="chapter-nav">
-<div class="prev"><a href="applications.html"><span class="header-section-number">10</span> Applications</a></div>
-<div class="next"><a href="references.html">References</a></div>
+<div class="prev"><a href="administrative-other.html">Administrative / Other</a></div>
+<div class="next"><a href="applications.html"><span class="header-section-number">10</span> Applications</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
-      <ul class="nav navbar-nav"><li><a class="nav-link" href="#final-words"><span class="header-section-number">11</span> Final Words</a></li></ul>
+      <ul class="nav navbar-nav"><li><a class="nav-link" href="#notes-caveats">Notes &amp; caveats</a></li></ul>
 
       <div class="book-extra">
         <ul class="list-unstyled">

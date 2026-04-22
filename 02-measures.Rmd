@@ -74,7 +74,10 @@ recode_auto <- c(
   "FMPS" = "FROST MULTIDIMENSIONAL PERFECTIONISM SCALE",
   "DERS" = "DIFFICULTIES IN EMOTION REGULATION SCALE",  
   "POTS" = "PERCEPTIONS OF TEASING SCALE", 
-  "FUNCTION OF EXERCISE" = "FADE/FAMB"
+  "FUNCTION OF EXERCISE" = "FADE/FAMB", 
+  "DATA COLLECTION STUDY VISIT A" = "STUDY VISIT A COLLECTION FORM", 
+  "DATA COLLECTION STUDY VISIT B" = "STUDY VISIT B COLLECTION FORM",
+  "DATA COLLECTION STUDY VISIT C" = "STUDY VISIT C COLLECTION FORM"
 )
 
 # ==============================
@@ -126,6 +129,11 @@ powered_clean <- clean_codebook(powered, "POWERED")
 # COMBINE DATA
 # ==============================
 comparison1 <- bind_rows(maxed_clean, mr21_clean, powered_clean)
+
+save(comparison1, file = "Codebook/comparison1.RData")
+
+##save comparison1 as Excel for manual review if needed
+write_xlsx(comparison1, "Codebook/comparison1.xlsx")
 
 # ==============================
 # VARIABLE-LEVEL SHARING INFO

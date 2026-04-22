@@ -36,46 +36,6 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{color}
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\usepackage{framed}
-\definecolor{shadecolor}{RGB}{248,248,248}
-\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\BuiltInTok}[1]{#1}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
-\newcommand{\ExtensionTok}[1]{#1}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\ImportTok}[1]{#1}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\NormalTok}[1]{#1}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
-\newcommand{\RegionMarkerTok}[1]{#1}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \usepackage{longtable,booktabs,array}
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
@@ -125,7 +85,7 @@
 
 \title{Meta Code Book}
 \author{Mahathi Gavuji}
-\date{2026-04-20}
+\date{2026-04-22}
 
 \begin{document}
 \maketitle
@@ -150,88 +110,68 @@ POWERED:
 
 BAM:
 
-\chapter{Demographics variables}\label{demo}
-
-\#\#Demographic Collection Form
-
-Demographic Variables
-
-\#Anthrometropretic Measures \{\#weight\}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{weight\_measures }\OtherTok{\textless{}{-}}\NormalTok{ comparison1 }\SpecialCharTok{|\textgreater{}} 
-  \CommentTok{\#filter for bmi measures and height measure in label}
-  \FunctionTok{filter}\NormalTok{(}\FunctionTok{grepl}\NormalTok{(}\StringTok{"bmi|height"}\NormalTok{, Label, }\AttributeTok{ignore.case =} \ConstantTok{TRUE}\NormalTok{)) }\SpecialCharTok{|\textgreater{}} 
-   \FunctionTok{mutate}\NormalTok{(}
-    \AttributeTok{Project =} \FunctionTok{case\_when}\NormalTok{(}
-\NormalTok{      In\_MAXED }\SpecialCharTok{==}\ConstantTok{TRUE} \SpecialCharTok{\&}\NormalTok{ In\_MR21 }\SpecialCharTok{==}\ConstantTok{TRUE} \SpecialCharTok{\textasciitilde{}} \FunctionTok{paste}\NormalTok{(tag\_maxed, tag\_mr21),}
-\NormalTok{      In\_MAXED }\SpecialCharTok{==} \ConstantTok{TRUE} \SpecialCharTok{\textasciitilde{}}\NormalTok{ tag\_maxed,}
-\NormalTok{      In\_MR21 }\SpecialCharTok{==} \ConstantTok{TRUE} \SpecialCharTok{\textasciitilde{}}\NormalTok{ tag\_mr21))}
-
-\CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
-\CommentTok{\# TOGGLE BUTTONS}
-\CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
-\NormalTok{toggle\_html1 }\OtherTok{\textless{}{-}} \FunctionTok{HTML}\NormalTok{(}\StringTok{"}
-\StringTok{\textless{}div style=\textquotesingle{}margin{-}bottom:10px;\textquotesingle{}\textgreater{}}
-\StringTok{\textless{}button class=\textquotesingle{}toggle{-}btn btn{-}shared\textquotesingle{} onclick=}\SpecialCharTok{\textbackslash{}"}\StringTok{filterTable(\textquotesingle{}shared\textquotesingle{})}\SpecialCharTok{\textbackslash{}"}\StringTok{\textgreater{}Shared\textless{}/button\textgreater{}}
-\StringTok{\textless{}button class=\textquotesingle{}toggle{-}btn btn{-}maxed\textquotesingle{} onclick=}\SpecialCharTok{\textbackslash{}"}\StringTok{filterTable(\textquotesingle{}maxed\textquotesingle{})}\SpecialCharTok{\textbackslash{}"}\StringTok{\textgreater{}MAXED\textless{}/button\textgreater{}}
-\StringTok{\textless{}button class=\textquotesingle{}toggle{-}btn btn{-}mr21\textquotesingle{} onclick=}\SpecialCharTok{\textbackslash{}"}\StringTok{filterTable(\textquotesingle{}mr21\textquotesingle{})}\SpecialCharTok{\textbackslash{}"}\StringTok{\textgreater{}MR21\textless{}/button\textgreater{}}
-\StringTok{\textless{}/div\textgreater{}}
-
-\StringTok{\textless{}script\textgreater{}}
-\StringTok{function filterTable(category)\{}
-\StringTok{  var table = $(\textquotesingle{}\#weight\_measures\textquotesingle{}).DataTable();}
-\StringTok{  if(category === \textquotesingle{}all\textquotesingle{})\{}
-\StringTok{    table.column(5).search(\textquotesingle{}\textquotesingle{}).draw();}
-\StringTok{  \} else \{}
-\StringTok{    table.column(5).search(category).draw();}
-\StringTok{  \}}
-\StringTok{\}}
-\StringTok{\textless{}/script\textgreater{}}
-\StringTok{"}\NormalTok{)}
-
-\CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
-\CommentTok{\# DATATABLE (FULL WIDTH + SCROLLABLE)}
-\CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
-\NormalTok{tbl\_anthro }\OtherTok{\textless{}{-}}\NormalTok{ htmltools}\SpecialCharTok{::}\FunctionTok{div}\NormalTok{(}\AttributeTok{style =} \StringTok{"width: 100\%; overflow{-}x: auto;"}\NormalTok{,}
-  \FunctionTok{datatable}\NormalTok{(}
-\NormalTok{    weight\_measures }\SpecialCharTok{\%\textgreater{}\%}
-      \FunctionTok{select}\NormalTok{(ProjectTag, Variable, Label, In\_MAXED, In\_MR21, VarFilter),}
-    \AttributeTok{escape =} \ConstantTok{FALSE}\NormalTok{,}
-    \AttributeTok{rownames =} \ConstantTok{FALSE}\NormalTok{,}
-    \AttributeTok{filter =} \StringTok{"top"}\NormalTok{,}
-    \AttributeTok{options =} \FunctionTok{list}\NormalTok{(}
-      \AttributeTok{dom =} \StringTok{"Bfrtip"}\NormalTok{,}
-      \AttributeTok{buttons =} \FunctionTok{c}\NormalTok{(}\StringTok{"csv"}\NormalTok{),}
-      \AttributeTok{pageLength =} \DecValTok{20}\NormalTok{,}
-      \AttributeTok{scrollX =} \ConstantTok{TRUE}\NormalTok{,}
-      \AttributeTok{autoWidth =} \ConstantTok{TRUE}\NormalTok{,}
-      \AttributeTok{columnDefs =} \FunctionTok{list}\NormalTok{(}
-        \FunctionTok{list}\NormalTok{(}\AttributeTok{visible =} \ConstantTok{FALSE}\NormalTok{, }\AttributeTok{targets =} \DecValTok{5}\NormalTok{),}
-        \FunctionTok{list}\NormalTok{(}\AttributeTok{width =} \StringTok{"60px"}\NormalTok{,  }\AttributeTok{targets =} \DecValTok{1}\NormalTok{),  }\CommentTok{\# Status}
-        \FunctionTok{list}\NormalTok{(}\AttributeTok{width =} \StringTok{"180px"}\NormalTok{, }\AttributeTok{targets =} \DecValTok{2}\NormalTok{), }\CommentTok{\# Project}
-        \FunctionTok{list}\NormalTok{(}\AttributeTok{width =} \StringTok{"250px"}\NormalTok{, }\AttributeTok{targets =} \DecValTok{3}\NormalTok{)  }\CommentTok{\# Variable}
-\NormalTok{      )}
-\NormalTok{    ),}
-    \AttributeTok{container =}\NormalTok{ tags}\SpecialCharTok{$}\FunctionTok{table}\NormalTok{(}\AttributeTok{id =} \StringTok{"weight\_measures"}\NormalTok{)}
-\NormalTok{  )}
-\NormalTok{)}
-
-\CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
-\CommentTok{\# COLLAPSIBLE SECTION}
-\CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
-\NormalTok{htmltools}\SpecialCharTok{::}\FunctionTok{tagList}\NormalTok{(}
-  \FunctionTok{HTML}\NormalTok{(}\StringTok{"\textless{}details\textgreater{}\textless{}summary\textgreater{}\textless{}strong\textgreater{} Anthropometric}
-\StringTok{       Variables \textless{}/strong\textgreater{}\textless{}/summary\textgreater{}"}\NormalTok{),}
-\NormalTok{  toggle\_html1,}
-\NormalTok{  tbl\_anthro,}
-  \FunctionTok{HTML}\NormalTok{(}\StringTok{"\textless{}/details\textgreater{}"}\NormalTok{)}
-\NormalTok{  )}
-\end{Highlighting}
-\end{Shaded}
-
 \chapter{All Measures}\label{all-measures}
+
+\#\#\#BY Category\#\#\#
+
+\chapter*{Overview}\label{overview}
+\addcontentsline{toc}{chapter}{Overview}
+
+This codebook documents variables from three studies --- \textbf{POWERED}, \textbf{MAXED}, and \textbf{MR21} --- grouped into six conceptual categories, with a seventh \emph{Administrative / Other} appendix for REDCap system fields (timestamps, record IDs, form completion flags, consent/signature fields, etc.). Each variable is tagged with the project(s) in which it appears:
+
+Each chapter below has one searchable, sortable, filterable table. Use the column filters at the top of each table to narrow by Measure or Project.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\chapter{Demographics}\label{demographics}
+
+Age, sex assigned at birth, gender identity, pronouns, race/ethnicity, education, household characteristics, and other participant background variables.
+
+\chapter{Anthropometric Measures}\label{anthropometric-measures}
+
+Height, weight, BMI, Tanner staging, and pubertal development indicators.
+
+\chapter{Medical History}\label{medical-history}
+
+Medical diagnoses, surgeries, hospitalizations, medications, menstrual history, substance use, vitals, and prior weight history.
+
+\chapter{Mental Health Diagnosis}\label{mental-health-diagnosis}
+
+Diagnostic interviews and standardized symptom measures --- DIAMOND, BDI-II, PHQ-9, GAD-7, RCADS, YBOCS, OCI, Columbia SSRS, DSM-5 Cross-Cutting Symptoms, MMSE.
+
+\chapter{Eating Disorder Behaviors}\label{eating-disorder-behaviors}
+
+EDE, EPSI, ED100K / ED100K+, ED History, Drive for Thinness/Muscularity, Compulsive Exercise, Exercise Dependence, ART, Goldfarb Fear of Fat, Analogous Exercise Decisions, SRHI (habitual eating), post-interview target-weight survey, and binge / purge / restrict / food-intake / milkshake task items from the visit forms.
+
+\chapter{Socio-behavioral}\label{socio-behavioral}
+
+Anxiety, mood, emotion regulation, perfectionism, social evaluation, body image state, interoception, and other transdiagnostic trait / state measures --- ASI, BIS/BAS, DERS, Frost MPS, IUS, Self-Compassion, SATAQ, BFNE, Perceptions of Teasing, SPSRQ, FADE/FAMB, NVS, PVS, EMA, OCYC Maladaptive, Body Appreciation.
+
+\chapter*{Administrative / Other}\label{administrative-other}
+\addcontentsline{toc}{chapter}{Administrative / Other}
+
+REDCap system fields and study-flow variables: survey timestamps, record IDs, form-complete flags, consent/signature fields, visit start/end times, payment records, and interviewer notes. Included for completeness; not substantive measures.
+
+\chapter*{Notes \& caveats}\label{notes-caveats}
+\addcontentsline{toc}{chapter}{Notes \& caveats}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Mixed intake forms} (DCF, DCF-Parents, Study Visit A/B/C Collection Forms) are split heuristically; review entries flagged in \emph{Administrative / Other} to confirm none should be promoted to a substantive category.
+\item
+  \textbf{Duplicate variable names} across projects are collapsed into a single row with all source projects listed as badges. If the same name refers to different constructs in different projects, split them in \texttt{codebook.csv} before rendering.
+\item
+  \textbf{Value coding} is reproduced from the source REDCap export and truncated to 180 chars in the category tables --- full strings are preserved in \texttt{codebook.csv}.
+\item
+  \textbf{ART (Athletes' Relationship with Training)} is placed under \emph{Eating Disorder Behaviors} because of its use in assessing compulsive exercise in ED populations. Move it to \emph{Socio-behavioral} if you prefer a behavioral-trait framing.
+\item
+  \textbf{ASI} is treated as the \emph{Anxiety Sensitivity Index} (socio-behavioral), not an eating-symptom inventory.
+\item
+  \textbf{Tanner Stages / PDS} are treated as anthropometric/maturation indicators. Move them in \texttt{codebook.csv} if your analyses treat them as medical history.
+\end{itemize}
+
+To refine categorization, edit \texttt{codebook.csv} (hand-correct the \texttt{category} column) and re-render.
 
 \chapter{Applications}\label{applications}
 

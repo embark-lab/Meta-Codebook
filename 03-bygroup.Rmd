@@ -1,0 +1,188 @@
+###BY Category###
+```{r setup, include = FALSE, cache = TRUE}
+knitr::opts_chunk$set(
+  echo    = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  cache   = TRUE
+)
+
+# ---- packages ---------------------------------------------------------------
+# Install only if missing (do NOT re-install on every knit).
+need <- c("dplyr", "tidyr", "readr", "stringr", "htmltools", "DT", "knitr")
+new  <- setdiff(need, rownames(installed.packages()))
+if (length(new)) install.packages(new, repos = "https://cloud.r-project.org")
+invisible(lapply(need, library, character.only = TRUE))
+
+# ---- load codebook ----------------------------------------------------------
+# codebook.csv must live next to this Rmd when you render it.
+codebook <- readr::read_csv("Codebook/codebook.csv", show_col_types = FALSE) |>
+  dplyr::mutate(
+    label    = dplyr::coalesce(label, ""),
+    measure  = dplyr::coalesce(measure, ""),
+    values   = dplyr::coalesce(values, ""),
+    projects = dplyr::coalesce(projects, "")
+  )
+
+# ---- project badge helpers --------------------------------------------------
+project_colors <- c(
+  POWERED = "#1f77b4",   # blue
+  MAXED   = "#e67e22",   # orange
+  MR21    = "#2ecc71"    # green
+)
+
+# Vectorised: build every badge HTML in one pass (much faster than per-row).
+project_badges_vec <- function(projs_csv) {
+  out <- character(length(projs_csv))
+  for (i in seq_along(projs_csv)) {
+    s <- projs_csv[[i]]
+    if (is.na(s) || !nzchar(s)) { out[i] <- ""; next }
+    parts <- trimws(strsplit(s, ",", fixed = TRUE)[[1]])
+    cols  <- project_colors[parts]
+    cols[is.na(cols)] <- "#7f8c8d"
+    out[i] <- paste0(
+      sprintf(
+        '<span style="display:inline-block;padding:2px 8px;margin:1px 2px;border-radius:10px;background:%s;color:#fff;font-size:0.8em;font-weight:600;letter-spacing:0.5px;">%s</span>',
+        cols, parts
+      ),
+      collapse = " "
+    )
+  }
+  out
+}
+
+# Single DT-based renderer used by every chapter.
+# DataTables is client-side JS: the render cost is constant regardless of
+# row count, and the user gets search/sort/paginate for free.
+render_category <- function(cat_name, page_length = 25) {
+  sub <- codebook |>
+    dplyr::filter(category == cat_name) |>
+    dplyr::arrange(measure, variable)
+  if (nrow(sub) == 0) {
+    return(htmltools::HTML("<em>No variables in this category.</em>"))
+  }
+  tbl <- data.frame(
+    Variable = sprintf("<code>%s</code>", htmltools::htmlEscape(sub$variable)),
+    Label    = htmltools::htmlEscape(stringr::str_trunc(sub$label, 200)),
+    Measure  = htmltools::htmlEscape(sub$measure),
+    `Value / coding` = htmltools::htmlEscape(stringr::str_trunc(sub$values, 180)),
+    Projects = project_badges_vec(sub$projects),
+    check.names = FALSE,
+    stringsAsFactors = FALSE
+  )
+  DT::datatable(
+    tbl,
+    escape    = FALSE,
+    rownames  = FALSE,
+    filter    = "top",
+    class     = "stripe hover compact",
+    options   = list(
+      pageLength = page_length,
+      autoWidth  = FALSE,
+      dom        = "ftip",
+      columnDefs = list(
+        list(width = "180px", targets = 0),   # Variable
+        list(width = "120px", targets = 4)    # Projects
+      )
+    )
+  )
+}
+```
+
+# Overview {-}
+
+This codebook documents variables from three studies — **POWERED**, **MAXED**, and **MR21** — grouped into six conceptual categories, with a seventh *Administrative / Other* appendix for REDCap system fields (timestamps, record IDs, form completion flags, consent/signature fields, etc.). Each variable is tagged with the project(s) in which it appears:
+
+```{r project-legend, results = 'asis'}
+htmltools::HTML(project_badges_vec("POWERED,MAXED,MR21"))
+```
+
+Each chapter below has one searchable, sortable, filterable table. Use the column filters at the top of each table to narrow by Measure or Project.
+
+```{r summary-table}
+codebook |>
+  dplyr::count(category, name = "Variables") |>
+  dplyr::arrange(dplyr::desc(Variables)) |>
+  dplyr::rename(Category = category) |>
+  DT::datatable(options = list(dom = "t", pageLength = 10), rownames = FALSE)
+```
+
+```{r project-summary}
+codebook |>
+  tidyr::separate_rows(projects, sep = ",") |>
+  dplyr::mutate(projects = trimws(projects)) |>
+  dplyr::filter(projects != "") |>
+  dplyr::count(category, projects) |>
+  tidyr::pivot_wider(names_from = projects, values_from = n, values_fill = 0) |>
+  dplyr::rename(Category = category) |>
+  DT::datatable(options = list(dom = "t", pageLength = 10), rownames = FALSE)
+```
+
+---
+
+# Demographics
+
+Age, sex assigned at birth, gender identity, pronouns, race/ethnicity, education, household characteristics, and other participant background variables.
+
+```{r demographics}
+render_category("Demographics")
+```
+
+# Anthropometric Measures
+
+Height, weight, BMI, Tanner staging, and pubertal development indicators.
+
+```{r anthro}
+render_category("Anthropometric Measures")
+```
+
+# Medical History
+
+Medical diagnoses, surgeries, hospitalizations, medications, menstrual history, substance use, vitals, and prior weight history.
+
+```{r medhx}
+render_category("Medical History")
+```
+
+# Mental Health Diagnosis
+
+Diagnostic interviews and standardized symptom measures — DIAMOND, BDI-II, PHQ-9, GAD-7, RCADS, YBOCS, OCI, Columbia SSRS, DSM-5 Cross-Cutting Symptoms, MMSE.
+
+```{r mhdx}
+render_category("Mental Health Diagnosis")
+```
+
+# Eating Disorder Behaviors
+
+EDE, EPSI, ED100K / ED100K+, ED History, Drive for Thinness/Muscularity, Compulsive Exercise, Exercise Dependence, ART, Goldfarb Fear of Fat, Analogous Exercise Decisions, SRHI (habitual eating), post-interview target-weight survey, and binge / purge / restrict / food-intake / milkshake task items from the visit forms.
+
+```{r edbx}
+render_category("Eating Disorder Behaviors")
+```
+
+# Socio-behavioral
+
+Anxiety, mood, emotion regulation, perfectionism, social evaluation, body image state, interoception, and other transdiagnostic trait / state measures — ASI, BIS/BAS, DERS, Frost MPS, IUS, Self-Compassion, SATAQ, BFNE, Perceptions of Teasing, SPSRQ, FADE/FAMB, NVS, PVS, EMA, OCYC Maladaptive, Body Appreciation.
+
+```{r sociobeh}
+render_category("Socio-behavioral")
+```
+
+# Administrative / Other {-}
+
+REDCap system fields and study-flow variables: survey timestamps, record IDs, form-complete flags, consent/signature fields, visit start/end times, payment records, and interviewer notes. Included for completeness; not substantive measures.
+
+```{r admin}
+render_category("Administrative / Other")
+```
+
+# Notes & caveats {-}
+
+- **Mixed intake forms** (DCF, DCF-Parents, Study Visit A/B/C Collection Forms) are split heuristically; review entries flagged in *Administrative / Other* to confirm none should be promoted to a substantive category.
+- **Duplicate variable names** across projects are collapsed into a single row with all source projects listed as badges. If the same name refers to different constructs in different projects, split them in `codebook.csv` before rendering.
+- **Value coding** is reproduced from the source REDCap export and truncated to 180 chars in the category tables — full strings are preserved in `codebook.csv`.
+- **ART (Athletes' Relationship with Training)** is placed under *Eating Disorder Behaviors* because of its use in assessing compulsive exercise in ED populations. Move it to *Socio-behavioral* if you prefer a behavioral-trait framing.
+- **ASI** is treated as the *Anxiety Sensitivity Index* (socio-behavioral), not an eating-symptom inventory.
+- **Tanner Stages / PDS** are treated as anthropometric/maturation indicators. Move them in `codebook.csv` if your analyses treat them as medical history.
+
+To refine categorization, edit `codebook.csv` (hand-correct the `category` column) and re-render.

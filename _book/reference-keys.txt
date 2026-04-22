@@ -1,7 +1,12 @@
 introduction
 intro
-demo
 all-measures
+demographics
+anthropometric-measures
+medical-history
+mental-health-diagnosis
+eating-disorder-behaviors
+socio-behavioral
 applications
 example-one
 example-two
