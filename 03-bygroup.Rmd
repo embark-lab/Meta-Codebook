@@ -1,4 +1,4 @@
-###BY Category###
+
 ```{r setup, include = FALSE, cache = TRUE}
 knitr::opts_chunk$set(
   echo    = FALSE,
