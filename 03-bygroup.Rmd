@@ -1,5 +1,5 @@
 
-```{r setup, include = FALSE, cache = TRUE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(
   echo    = FALSE,
   warning = FALSE,

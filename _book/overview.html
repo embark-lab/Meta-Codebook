@@ -50,19 +50,18 @@
       <nav aria-label="Table of contents"><h2>Table of contents</h2>
         <ul class="book-toc list-unstyled">
 <li><a class="" href="index.html"><span class="header-section-number">1</span> Introduction</a></li>
-<li><a class="" href="intro.html"><span class="header-section-number">2</span> Introduction</a></li>
-<li><a class="" href="all-measures.html"><span class="header-section-number">3</span> All Measures</a></li>
+<li><a class="" href="all-measures.html"><span class="header-section-number">2</span> All Measures</a></li>
 <li><a class="active" href="overview.html">Overview</a></li>
-<li><a class="" href="demographics.html"><span class="header-section-number">4</span> Demographics</a></li>
-<li><a class="" href="anthropometric-measures.html"><span class="header-section-number">5</span> Anthropometric Measures</a></li>
-<li><a class="" href="medical-history.html"><span class="header-section-number">6</span> Medical History</a></li>
-<li><a class="" href="mental-health-diagnosis.html"><span class="header-section-number">7</span> Mental Health Diagnosis</a></li>
-<li><a class="" href="eating-disorder-behaviors.html"><span class="header-section-number">8</span> Eating Disorder Behaviors</a></li>
-<li><a class="" href="socio-behavioral.html"><span class="header-section-number">9</span> Socio-behavioral</a></li>
+<li><a class="" href="demographics.html"><span class="header-section-number">3</span> Demographics</a></li>
+<li><a class="" href="anthropometric-measures.html"><span class="header-section-number">4</span> Anthropometric Measures</a></li>
+<li><a class="" href="medical-history.html"><span class="header-section-number">5</span> Medical History</a></li>
+<li><a class="" href="mental-health-diagnosis.html"><span class="header-section-number">6</span> Mental Health Diagnosis</a></li>
+<li><a class="" href="eating-disorder-behaviors.html"><span class="header-section-number">7</span> Eating Disorder Behaviors</a></li>
+<li><a class="" href="socio-behavioral.html"><span class="header-section-number">8</span> Socio-behavioral</a></li>
 <li><a class="" href="administrative-other.html">Administrative / Other</a></li>
 <li><a class="" href="notes-caveats.html">Notes &amp; caveats</a></li>
-<li><a class="" href="applications.html"><span class="header-section-number">10</span> Applications</a></li>
-<li><a class="" href="final-words.html"><span class="header-section-number">11</span> Final Words</a></li>
+<li><a class="" href="applications.html"><span class="header-section-number">9</span> Applications</a></li>
+<li><a class="" href="final-words.html"><span class="header-section-number">10</span> Final Words</a></li>
 <li><a class="" href="references.html">References</a></li>
 </ul>
 
@@ -75,32 +74,15 @@
 <h1>Overview<a class="anchor" aria-label="anchor" href="#overview"><i class="fas fa-link"></i></a>
 </h1>
 <p>This codebook documents variables from three studies — <strong>POWERED</strong>, <strong>MAXED</strong>, and <strong>MR21</strong> — grouped into six conceptual categories, with a seventh <em>Administrative / Other</em> appendix for REDCap system fields (timestamps, record IDs, form completion flags, consent/signature fields, etc.). Each variable is tagged with the project(s) in which it appears:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">htmltools</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/htmltools/reference/HTML.html">HTML</a></span><span class="op">(</span><span class="fu">project_badges_vec</span><span class="op">(</span><span class="st">"POWERED,MAXED,MR21"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <span style="display:inline-block;padding:2px 8px;margin:1px 2px;border-radius:10px;background:#1f77b4;color:#fff;font-size:0.8em;font-weight:600;letter-spacing:0.5px;">POWERED</span> <span style="display:inline-block;padding:2px 8px;margin:1px 2px;border-radius:10px;background:#e67e22;color:#fff;font-size:0.8em;font-weight:600;letter-spacing:0.5px;">MAXED</span> <span style="display:inline-block;padding:2px 8px;margin:1px 2px;border-radius:10px;background:#2ecc71;color:#fff;font-size:0.8em;font-weight:600;letter-spacing:0.5px;">MR21</span>
 <p>Each chapter below has one searchable, sortable, filterable table. Use the column filters at the top of each table to narrow by Measure or Project.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">codebook</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span><span class="op">(</span><span class="va">category</span>, name <span class="op">=</span> <span class="st">"Variables"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">Variables</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>Category <span class="op">=</span> <span class="va">category</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html">datatable</a></span><span class="op">(</span>options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>dom <span class="op">=</span> <span class="st">"t"</span>, pageLength <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>, rownames <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-7c48c3b553307527101a" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-7c48c3b553307527101a">{"x":{"filter":"none","vertical":false,"data":[["Medical History","Eating Disorder Behaviors","Administrative / Other","Socio-behavioral","Mental Health Diagnosis","Anthropometric Measures","Demographics"],[1438,1355,740,650,294,120,93]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Category<\/th>\n      <th>Variables<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":10,"columnDefs":[{"className":"dt-right","targets":1},{"name":"Category","targets":0},{"name":"Variables","targets":1}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">codebook</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/separate_rows.html">separate_rows</a></span><span class="op">(</span><span class="va">projects</span>, sep <span class="op">=</span> <span class="st">","</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>projects <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html">trimws</a></span><span class="op">(</span><span class="va">projects</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">projects</span> <span class="op">!=</span> <span class="st">""</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span><span class="op">(</span><span class="va">category</span>, <span class="va">projects</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">projects</span>, values_from <span class="op">=</span> <span class="va">n</span>, values_fill <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>Category <span class="op">=</span> <span class="va">category</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html">datatable</a></span><span class="op">(</span>options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>dom <span class="op">=</span> <span class="st">"t"</span>, pageLength <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>, rownames <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-e926fc3f6a5aaeb7c30f" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-e926fc3f6a5aaeb7c30f">{"x":{"filter":"none","vertical":false,"data":[["Administrative / Other","Anthropometric Measures","Demographics","Eating Disorder Behaviors","Medical History","Mental Health Diagnosis","Socio-behavioral"],[351,46,27,445,126,118,383],[494,55,56,617,122,249,397],[58,37,55,757,1302,96,169]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Category<\/th>\n      <th>MAXED<\/th>\n      <th>MR21<\/th>\n      <th>POWERED<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":10,"columnDefs":[{"className":"dt-right","targets":[1,2,3]},{"name":"Category","targets":0},{"name":"MAXED","targets":1},{"name":"MR21","targets":2},{"name":"POWERED","targets":3}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><hr>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a2aa60b0753b114d7d62" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a2aa60b0753b114d7d62">{"x":{"filter":"none","vertical":false,"data":[["Medical History","Eating Disorder Behaviors","Administrative / Other","Socio-behavioral","Mental Health Diagnosis","Anthropometric Measures","Demographics"],[1438,1355,740,650,294,120,93]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Category<\/th>\n      <th>Variables<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":10,"columnDefs":[{"className":"dt-right","targets":1},{"name":"Category","targets":0},{"name":"Variables","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><div class="datatables html-widget html-fill-item" id="htmlwidget-5674c61bc949938655aa" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5674c61bc949938655aa">{"x":{"filter":"none","vertical":false,"data":[["Administrative / Other","Anthropometric Measures","Demographics","Eating Disorder Behaviors","Medical History","Mental Health Diagnosis","Socio-behavioral"],[351,46,27,445,126,118,383],[494,55,56,617,122,249,397],[58,37,55,757,1302,96,169]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Category<\/th>\n      <th>MAXED<\/th>\n      <th>MR21<\/th>\n      <th>POWERED<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":10,"columnDefs":[{"className":"dt-right","targets":[1,2,3]},{"name":"Category","targets":0},{"name":"MAXED","targets":1},{"name":"MR21","targets":2},{"name":"POWERED","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><hr>
 </div>
   <div class="chapter-nav">
-<div class="prev"><a href="all-measures.html"><span class="header-section-number">3</span> All Measures</a></div>
-<div class="next"><a href="demographics.html"><span class="header-section-number">4</span> Demographics</a></div>
+<div class="prev"><a href="all-measures.html"><span class="header-section-number">2</span> All Measures</a></div>
+<div class="next"><a href="demographics.html"><span class="header-section-number">3</span> Demographics</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
       <ul class="nav navbar-nav"><li><a class="nav-link" href="#overview">Overview</a></li></ul>
@@ -119,7 +101,7 @@
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Meta Code Book</strong>" was written by Mahathi Gavuji. It was last built on 2026-04-22.</p>
+    <p>"<strong>Meta Code Book</strong>" was written by Mahathi Gavuji. It was last built on 2026-04-28.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
