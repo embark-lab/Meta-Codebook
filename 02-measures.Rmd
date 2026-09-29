@@ -13,13 +13,68 @@ library(stringr)
 library(readxl)
 library(writexl)
 library(commonmark)
+library(dplyr)
+library(stringr)
+library(purrr)
+library(readxl)
+library(writexl)
 
 # ==============================
 # LOAD DATA
 # ==============================
+mr21_new <- load("Codebook/codebook_mr21.RData")
+maxed_new <- load("Codebook/codebook_maxed.RData")
 mr21    <- read_xlsx("Codebook/MR21_codebook.xlsx")
 maxed   <- read_xlsx("Codebook/maxed_codebook.xlsx")
 powered <- read_xlsx("Codebook/powered_codebook.xlsx")
+
+cb_maxed <- cb_maxed |> 
+  rename(Variable = variable)
+cb_mr21 <- cb_mr21 |> 
+  rename(Variable = variable)
+missing_vars <- function(xlsx, generated, key = "Variable") {
+  setdiff(generated[[key]], xlsx[[key]])
+}
+
+mr21_missing  <- missing_vars(mr21,  cb_mr21)
+maxed_missing <- missing_vars(maxed, cb_maxed)
+
+# variables in the generated codebook but not in the Excel file
+existing_split <- mr21 |>
+  transmute(Variable, Measure,
+            segs = str_split(Variable, "_"))
+
+infer_measure <- function(var, existing_split) {
+  segs <- str_split(var, "_")[[1]]
+  for (k in rev(seq_along(segs))) {                 # longest prefix first
+    target <- segs[seq_len(k)]
+    hits <- existing_split |>
+      filter(map_lgl(segs, ~ length(.x) >= k &&
+                            identical(.x[seq_len(k)], target)))
+    measures <- unique(hits$Measure[!is.na(hits$Measure)])
+    if (length(measures) == 1) return(measures)     # unambiguous → take it
+    if (length(measures) >  1) return(NA_character_) # ambiguous → flag
+  }
+  NA_character_
+}
+missing <- setdiff(cb_mr21$Variable, mr21$Variable)
+
+new_rows <- cb_mr21 |>
+  filter(Variable %in% missing) |>
+  transmute(
+    Variable,
+    Measure = map_chr(Variable, infer_measure, existing_split = existing_split),
+    Label   = label,          # from generated codebook
+    Value   = value_labels    # from generated codebook (rename if yours differs)
+  )
+
+# see what couldn't be auto-assigned before you commit
+unassigned_rows <- new_rows |> filter(is.na(Measure))   # inspect in the console if needed; not printed in the book
+
+# append, restore original column names, write out
+mr21_updated <- bind_rows(mr21, new_rows)
+
+mr21 <- mr21_updated
 
 # ==============================
 # CLEANING FUNCTIONS

@@ -1,4 +1,3 @@
-
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(
   echo    = FALSE,
@@ -89,7 +88,9 @@ render_category <- function(cat_name, page_length = 25) {
 }
 ```
 
-# Overview {-}
+# By Group {#by-group}
+
+## Overview {.unnumbered}
 
 This codebook documents variables from three studies — **POWERED**, **MAXED**, and **MR21** — grouped into six conceptual categories, with a seventh *Administrative / Other* appendix for REDCap system fields (timestamps, record IDs, form completion flags, consent/signature fields, etc.). Each variable is tagged with the project(s) in which it appears:
 
@@ -118,9 +119,9 @@ codebook |>
   DT::datatable(options = list(dom = "t", pageLength = 10), rownames = FALSE)
 ```
 
----
+------------------------------------------------------------------------
 
-# Demographics
+## Demographics
 
 Age, sex assigned at birth, gender identity, pronouns, race/ethnicity, education, household characteristics, and other participant background variables.
 
@@ -128,7 +129,7 @@ Age, sex assigned at birth, gender identity, pronouns, race/ethnicity, education
 render_category("Demographics")
 ```
 
-# Anthropometric Measures
+## Anthropometric Measures
 
 Height, weight, BMI, Tanner staging, and pubertal development indicators.
 
@@ -136,7 +137,7 @@ Height, weight, BMI, Tanner staging, and pubertal development indicators.
 render_category("Anthropometric Measures")
 ```
 
-# Medical History
+## Medical History
 
 Medical diagnoses, surgeries, hospitalizations, medications, menstrual history, substance use, vitals, and prior weight history.
 
@@ -144,7 +145,7 @@ Medical diagnoses, surgeries, hospitalizations, medications, menstrual history, 
 render_category("Medical History")
 ```
 
-# Mental Health Diagnosis
+## Mental Health Diagnosis
 
 Diagnostic interviews and standardized symptom measures — DIAMOND, BDI-II, PHQ-9, GAD-7, RCADS, YBOCS, OCI, Columbia SSRS, DSM-5 Cross-Cutting Symptoms, MMSE.
 
@@ -152,7 +153,7 @@ Diagnostic interviews and standardized symptom measures — DIAMOND, BDI-II, PHQ
 render_category("Mental Health Diagnosis")
 ```
 
-# Eating Disorder Behaviors
+## Eating Disorder Behaviors
 
 EDE, EPSI, ED100K / ED100K+, ED History, Drive for Thinness/Muscularity, Compulsive Exercise, Exercise Dependence, ART, Goldfarb Fear of Fat, Analogous Exercise Decisions, SRHI (habitual eating), post-interview target-weight survey, and binge / purge / restrict / food-intake / milkshake task items from the visit forms.
 
@@ -160,7 +161,7 @@ EDE, EPSI, ED100K / ED100K+, ED History, Drive for Thinness/Muscularity, Compuls
 render_category("Eating Disorder Behaviors")
 ```
 
-# Socio-behavioral
+## Socio-behavioral
 
 Anxiety, mood, emotion regulation, perfectionism, social evaluation, body image state, interoception, and other transdiagnostic trait / state measures — ASI, BIS/BAS, DERS, Frost MPS, IUS, Self-Compassion, SATAQ, BFNE, Perceptions of Teasing, SPSRQ, FADE/FAMB, NVS, PVS, EMA, OCYC Maladaptive, Body Appreciation.
 
@@ -168,7 +169,7 @@ Anxiety, mood, emotion regulation, perfectionism, social evaluation, body image 
 render_category("Socio-behavioral")
 ```
 
-# Administrative / Other {-}
+## Administrative / Other {.unnumbered}
 
 REDCap system fields and study-flow variables: survey timestamps, record IDs, form-complete flags, consent/signature fields, visit start/end times, payment records, and interviewer notes. Included for completeness; not substantive measures.
 
@@ -176,7 +177,7 @@ REDCap system fields and study-flow variables: survey timestamps, record IDs, fo
 render_category("Administrative / Other")
 ```
 
-# Notes & caveats {-}
+## Notes & caveats {.unnumbered}
 
 - **Mixed intake forms** (DCF, DCF-Parents, Study Visit A/B/C Collection Forms) are split heuristically; review entries flagged in *Administrative / Other* to confirm none should be promoted to a substantive category.
 - **Duplicate variable names** across projects are collapsed into a single row with all source projects listed as badges. If the same name refers to different constructs in different projects, split them in `codebook.csv` before rendering.
