@@ -1,0 +1,1 @@
+The DSM-V Cross Cutting Symptom Measure is a 23-item self report measure that assess different psychiatric symptoms. 

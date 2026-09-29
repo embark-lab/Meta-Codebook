@@ -1,0 +1,1 @@
+The Diamond is a semi-structured interview that screens for various psychiatric disorders. 
