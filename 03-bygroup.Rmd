@@ -27,7 +27,8 @@ codebook <- readr::read_csv("Codebook/codebook.csv", show_col_types = FALSE) |>
 project_colors <- c(
   POWERED = "#1f77b4",   # blue
   MAXED   = "#e67e22",   # orange
-  MR21    = "#2ecc71"    # green
+  MR21    = "#2ecc71",   # green
+  BAM     = "#c0392b"    # red
 )
 
 # Vectorised: build every badge HTML in one pass (much faster than per-row).
@@ -92,10 +93,10 @@ render_category <- function(cat_name, page_length = 25) {
 
 ## Overview {.unnumbered}
 
-This codebook documents variables from three studies — **POWERED**, **MAXED**, and **MR21** — grouped into six conceptual categories, with a seventh *Administrative / Other* appendix for REDCap system fields (timestamps, record IDs, form completion flags, consent/signature fields, etc.). Each variable is tagged with the project(s) in which it appears:
+This codebook documents variables from four studies — **POWERED**, **MAXED**, **MR21**, and **BAM** — grouped into six conceptual categories, with a seventh *Administrative / Other* appendix for REDCap system fields (timestamps, record IDs, form completion flags, consent/signature fields, etc.). Each variable is tagged with the project(s) in which it appears:
 
 ```{r project-legend, results = 'asis'}
-htmltools::HTML(project_badges_vec("POWERED,MAXED,MR21"))
+htmltools::HTML(project_badges_vec("POWERED,MAXED,MR21,BAM"))
 ```
 
 Each chapter below has one searchable, sortable, filterable table. Use the column filters at the top of each table to narrow by Measure or Project.
@@ -179,7 +180,8 @@ render_category("Administrative / Other")
 
 ## Notes & caveats {.unnumbered}
 
-- **Mixed intake forms** (DCF, DCF-Parents, Study Visit A/B/C Collection Forms) are split heuristically; review entries flagged in *Administrative / Other* to confirm none should be promoted to a substantive category.
+- **Mixed intake forms** (DCF, DCF-Parents, Study Visit A/B/C Collection Forms, BAM's Data Collection Form) are split heuristically; review entries flagged in *Administrative / Other* to confirm none should be promoted to a substantive category.
+- **BAM's category assignments** were added by Claude when BAM was integrated into this codebook and have no prior precedent to draw on the way the other three projects' categories did. Measures BAM shares with MAXED/MR21/POWERED (GAD-7, PHQ-9, SATAQ, EPSI, EFQ, Goldfarb Fear of Fat, IUS-S, etc.) inherited that measure's existing category. Measures unique to BAM (CTQ, WDWHQ, PANAS-SF, FPS, UMB-FAT, TMFS, Ideal Body Stereotype Scale, SATAQ Subscales, MMQ-S, FSQ / FSQ - Family, Brief Resilient Coping Scale, EDDS, and the BAM-specific admin forms) were categorized by Claude's best judgment from the measure's name and content — please review these, especially the weight-bias/body-image scales (FPS, UMB-FAT, TMFS) that could reasonably sit in either *Socio-behavioral* or *Eating Disorder Behaviors*.
 - **Duplicate variable names** across projects are collapsed into a single row with all source projects listed as badges. If the same name refers to different constructs in different projects, split them in `codebook.csv` before rendering.
 - **Value coding** is reproduced from the source REDCap export and truncated to 180 chars in the category tables — full strings are preserved in `codebook.csv`.
 - **ART (Athletes' Relationship with Training)** is placed under *Eating Disorder Behaviors* because of its use in assessing compulsive exercise in ED populations. Move it to *Socio-behavioral* if you prefer a behavioral-trait framing.

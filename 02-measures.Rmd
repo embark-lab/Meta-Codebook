@@ -27,6 +27,7 @@ maxed_new <- load("Codebook/codebook_maxed.RData")
 mr21    <- read_xlsx("Codebook/MR21_codebook.xlsx")
 maxed   <- read_xlsx("Codebook/maxed_codebook.xlsx")
 powered <- read_xlsx("Codebook/powered_codebook.xlsx")
+bam     <- read_xlsx("Codebook/bam_codebook.xlsx")
 
 cb_maxed <- cb_maxed |> 
   rename(Variable = variable)
@@ -130,9 +131,27 @@ recode_auto <- c(
   "DERS" = "DIFFICULTIES IN EMOTION REGULATION SCALE",  
   "POTS" = "PERCEPTIONS OF TEASING SCALE", 
   "FUNCTION OF EXERCISE" = "FADE/FAMB", 
-  "DATA COLLECTION STUDY VISIT A" = "STUDY VISIT A COLLECTION FORM", 
+  "DATA COLLECTION STUDY VISIT A" = "STUDY VISIT A COLLECTION FORM",
   "DATA COLLECTION STUDY VISIT B" = "STUDY VISIT B COLLECTION FORM",
-  "DATA COLLECTION STUDY VISIT C" = "STUDY VISIT C COLLECTION FORM"
+  "DATA COLLECTION STUDY VISIT C" = "STUDY VISIT C COLLECTION FORM",
+
+  # -- BAM (bam_codebook.xlsx) form-name harmonization --------------------
+  # BAM's REDCap machine names differ slightly from the existing projects'
+  # (e.g. "gad7" vs. "gad-7"), so without these keys the same instrument
+  # would show up twice under two different Measure labels.
+  "GAD7"                              = "GENERALIZED ANXIETY DISORDER 7-ITEM SCALE",
+  "PHQ9"                              = "PATIENT HEALTH QUESTIONNAIRE 9-ITEM",
+  "IUSS"                              = "INTOLERANCE OF UNCERTAINTY-SHORT FORM",
+  "ED 100K"                           = "ED100K",
+  "WDWQ"                              = "WDWHQ",
+  "PANASSF"                           = "PANAS-SF",
+  "UMBFAT"                            = "UMB-FAT",
+  "MMQ E3B8AF"                        = "MMQ-S",
+  "SATAQ 4A7242"                      = "SATAQ SUBSCALES",
+  "IDEAL BODY STEREOTYPE SCALE REVISED" = "IDEAL BODY STEREOTYPE SCALE - REVISED",
+  "FSQ FAMLIY"                        = "FSQ - FAMILY",
+  "FEEDBACK POST"                     = "FEEDBACK SURVEY",
+  "IATAAT COMPLETION"                 = "IAT/AAT COMPLETION"
 )
 
 # ==============================
@@ -179,11 +198,17 @@ clean_codebook <- function(df, project_name) {
 mr21_clean    <- clean_codebook(mr21,    "MR21")
 maxed_clean   <- clean_codebook(maxed,   "MAXED")
 powered_clean <- clean_codebook(powered, "POWERED")
+bam_clean     <- clean_codebook(bam,     "BAM")
 
 # ==============================
 # COMBINE DATA
 # ==============================
-comparison1 <- bind_rows(maxed_clean, mr21_clean, powered_clean)
+comparison1 <- bind_rows(maxed_clean, mr21_clean, powered_clean, bam_clean)
+
+# Total number of source projects currently in the book. Used below instead
+# of a hard-coded "3" so the "shared across every project" logic keeps
+# working if a 5th project is ever added the same way BAM was.
+n_projects_total <- n_distinct(comparison1$Project)
 
 save(comparison1, file = "Codebook/comparison1.RData")
 
@@ -203,9 +228,9 @@ var_projects <- comparison1 %>%
   ) %>%
   mutate(
     VarShared = case_when(
-      VarProjectCount == 3 ~ "shared-all",
-      VarProjectCount == 2 ~ "shared-two",
-      TRUE                 ~ "unique"
+      VarProjectCount == n_projects_total & n_projects_total > 1 ~ "shared-all",
+      VarProjectCount >= 2                                       ~ "shared-two",
+      TRUE                                                       ~ "unique"
     )
   )
 
@@ -236,7 +261,8 @@ make_project_badges <- function(projects_string) {
   badges <- c(
     if ("MAXED"   %in% projects) "<span class='badge maxed'>MAXED</span>"     else "",
     if ("MR21"    %in% projects) "<span class='badge mr21'>MR21</span>"       else "",
-    if ("POWERED" %in% projects) "<span class='badge powered'>POWERED</span>" else ""
+    if ("POWERED" %in% projects) "<span class='badge powered'>POWERED</span>" else "",
+    if ("BAM"     %in% projects) "<span class='badge bam'>BAM</span>"         else ""
   )
   paste(badges[nchar(badges) > 0], collapse = "")
 }
@@ -347,6 +373,7 @@ css <- HTML("
   .badge.maxed   { background-color: #FF922B; }
   .badge.mr21    { background-color: #339AF0; }
   .badge.powered { background-color: #9B59B6; }
+  .badge.bam     { background-color: #c0392b; }
 
   /* Row colours */
   tr.shared-all td { background-color: #e8f5e9; }
@@ -379,6 +406,7 @@ css <- HTML("
   .filter-btn.maxed   { background-color: #FF922B; color: white; }
   .filter-btn.mr21    { background-color: #339AF0; color: white; }
   .filter-btn.powered { background-color: #9B59B6; color: white; }
+  .filter-btn.bam     { background-color: #c0392b; color: white; }
   .filter-btn.reset   { background-color: #868e96; color: white; opacity: 0.8; }
   .filter-btn.reset:hover { opacity: 1; }
 
@@ -458,7 +486,7 @@ css <- HTML("
 # ==============================
 # FILTER CONTROLS + JS
 # ==============================
-filter_controls <- HTML("
+filter_controls_raw <- "
 <!-- SEARCH BAR -->
 <div class='search-bar'>
   <strong style='font-size:13px;'>Search:</strong>
@@ -472,6 +500,7 @@ filter_controls <- HTML("
   <button id='btn-maxed'   class='filter-btn maxed'   onclick='toggleProject(\"MAXED\")'>MAXED</button>
   <button id='btn-mr21'    class='filter-btn mr21'    onclick='toggleProject(\"MR21\")'>MR21</button>
   <button id='btn-powered' class='filter-btn powered' onclick='toggleProject(\"POWERED\")'>POWERED</button>
+  <button id='btn-bam'     class='filter-btn bam'     onclick='toggleProject(\"BAM\")'>BAM</button>
   <button id='btn-reset'   class='filter-btn reset'   onclick='resetAll()'>&#x21BA; Reset</button>
 </div>
 
@@ -485,8 +514,8 @@ filter_controls <- HTML("
 
 <div class='legend'>
   Row colours &nbsp;
-  <span class='leg-all'></span> Variable in all 3 projects &nbsp;
-  <span class='leg-two'></span> Variable in 2 projects &nbsp;
+  <span class='leg-all'></span> Variable in all PLACEHOLDER_N_PROJECTS projects &nbsp;
+  <span class='leg-two'></span> Variable in 2+ projects &nbsp;
   <span class='leg-uniq'></span> Variable unique to 1 project
 </div>
 
@@ -530,7 +559,7 @@ function updateSummary() {
     el.innerHTML = '<em>Showing all projects</em>';
     return;
   }
-  var colorMap = { MAXED: '#FF922B', MR21: '#339AF0', POWERED: '#9B59B6' };
+  var colorMap = { MAXED: '#FF922B', MR21: '#339AF0', POWERED: '#9B59B6', BAM: '#c0392b' };
   var pills = selectedProjects.map(function(p) {
     return '<span style=\"display:inline-block;background:' + colorMap[p] +
            ';color:white;border-radius:10px;padding:2px 9px;' +
@@ -602,7 +631,11 @@ function applyFilters() {
   });
 }
 </script>
-")
+"
+
+filter_controls <- HTML(
+  sub("PLACEHOLDER_N_PROJECTS", as.character(n_projects_total), filter_controls_raw, fixed = TRUE)
+)
 
 # ==============================
 # BUILD MEASURE SECTIONS
@@ -614,8 +647,8 @@ measure_sections <- lapply(measure_list, function(measure_name) {
   badge_html <- if (nrow(badge_row) > 0) badge_row$MeasureBadges[1] else ""
   mc         <- if (nrow(badge_row) > 0) badge_row$MeasureCount[1]  else 1
 
-  shared_label <- if (mc == 3) "shared-all" else if (mc == 2) "shared-two" else "unique"
-  shared_text  <- if (mc == 3) "All 3 projects" else if (mc == 2) "2 projects" else "1 project"
+  shared_label <- if (mc == n_projects_total && n_projects_total > 1) "shared-all" else if (mc >= 2) "shared-two" else "unique"
+  shared_text  <- if (mc == n_projects_total && n_projects_total > 1) sprintf("All %d projects", n_projects_total) else if (mc >= 2) sprintf("%d projects", mc) else "1 project"
   shared_badge <- sprintf("<span class='shared-measure-badge %s'>%s</span>",
                           shared_label, shared_text)
 
