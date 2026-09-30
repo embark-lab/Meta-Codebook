@@ -1,8 +1,9 @@
-introduction
 intro
-demo
 all-measures
-applications
-example-one
-example-two
-final-words
+by-group
+demographics
+anthropometric-measures
+medical-history
+mental-health-diagnosis
+eating-disorder-behaviors
+socio-behavioral

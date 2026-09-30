@@ -1,9 +1,0 @@
-intro
-all-measures
-by-group
-demographics
-anthropometric-measures
-medical-history
-mental-health-diagnosis
-eating-disorder-behaviors
-socio-behavioral
